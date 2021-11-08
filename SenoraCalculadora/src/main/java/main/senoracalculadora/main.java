@@ -9,113 +9,152 @@ package main.senoracalculadora;
  *
  * @author DPDAN
  */
-
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import static java.awt.Font.PLAIN;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 
-public class main extends JFrame{
+public class main extends JFrame {
 
+    //Display para mostrar los números
+    JLabel display;
+    //Cantidad de botones de calculadora
+    int numBotones = 17;
+    //Array de botones para números y operaciones
+    JButton botones[] = new JButton[numBotones];
+    //Array de strings para las etiquetas de los botones
+    String textoBotones[] = {"Resultado", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
+    //Array de posiciones en X de cada botón
+    int xBotones[] = {15, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210};
+    //Array de posiciones en Y de cada botón
+    int yBotones[] = {90, 155, 155, 155, 155, 220, 220, 220, 220, 285, 285, 285, 285, 350, 350, 350, 350};
+    //Array de índices del array de botones que corresponden a números (en el órden en el que se pintarán)
+    int numerosBotones[] = {14, 9, 10, 11, 5, 6, 7, 1, 2, 3};
+    //Array de índices del array de botones que corresponden a operaciones (en el órden en el que se pintarán)
+    int[] operacionesBotones = {16, 12, 8, 4};
+    //Alto y ancho de cada botón
+    int anchoBoton = 50;
+    int altoBoton = 50;
+    //Para indicar que he terminado de escribir dígitos un número y que voy a añadir el siguiente
+    boolean nuevoNumero = true;
+    //Para indicar si ya he utilizado el punto decimal en ese número (solo puede haber uno)
+    boolean puntoDecimal = false;
+    //Para almacenas los resultados parciales y totales de las operaciones realizadas
+    double operando1 = 0;
+    double operando2 = 0;
+    double resultado = 0;
+    //Para almacenar el string de la operación realizada (+, -, *, /)
+    String operacion = "";
 
-    
-    JButton boton[], botonResultado; //array de botones y botón de resultado
-    JLabel display; //display de operaciones
-    JPanel panelBotones; //panel para los botones (salvo el de resultado)
-    int ancho = 50, alto = 50; //para posicionar botones
-    FlowLayout miFlowLayout;
-    GridLayout miGridLayout;
-    
-    public main(){
-        
-        initDisplay();
-        initBotones();
-        initBotonResultado();
-        initPantalla();
+    public main() {
+
+        initDisplay(); //Display de la calculadora
+        initBotones(); //Botones de la calculadora
+        initPantalla(); //Opciones del JFrame
+        eventosNumeros(); //Eventos asociados a los botones de números de la calculadora
+        eventoDecimal(); //Eventos asociados al botón decimal "." de la calculadora
+        eventosOperaciones(); //Eventos asociados a los botones de operaciones (+,-,*,/) de la calculadora
+        eventoResultado();  //Eventos asociados al botón resultado de la calculadora
+        eventoLimpiar();  //Eventos asociados al botón de limpiar "C" de la calculadora
 
     }
-    
-    private void initDisplay(){
-        
-        display = new JLabel("0");
-        display.setPreferredSize(new Dimension(230,60));
-        display.setOpaque(true);
-        display.setBackground(Color.black);
-        display.setForeground(Color.green);
-        display.setBorder(new LineBorder(Color.DARK_GRAY));
-        display.setFont(new Font("MONOSPACED",PLAIN,24));
-        display.setHorizontalAlignment(SwingConstants.RIGHT);
-        add(display);
-        
+
+    private void initDisplay() {
+
+        display = new JLabel("0"); //Inicio JLabel
+        display.setBounds(15, 15, 245, 60); //Posición y dimensiones
+        display.setOpaque(true); //Para poder darle un color de fondo
+        display.setBackground(Color.BLACK); //Color de fondo
+        display.setForeground(Color.GREEN); //Color de fuente
+        display.setBorder(new LineBorder(Color.DARK_GRAY)); //Borde
+        display.setFont(new Font("MONOSPACED", PLAIN, 24)); //Fuente
+        display.setHorizontalAlignment(SwingConstants.RIGHT); //Alineamiento horizontal derecha
+        add(display); //Añado el JLabel al JFrame
     }
-    
-    private void initBotones(){
-        
-        //Inicializo panel de botones y su gridlayout de 4 columnas y 4 filas
-        panelBotones = new JPanel();
-        panelBotones.setBackground(Color.black);
-        miGridLayout = new GridLayout(4,4,10,10);
-        panelBotones.setLayout(miGridLayout);
-        add(panelBotones);
-        
-        //Array de textos de los botones
-        String[] texto_boton = new String[]{"0",".","C","+","1","2","3","-","4","5","6","*","7","8","9","/"};
-        //Inicializo array de botones
-        boton = new JButton[16];
-        
-        for (int i=0; i<=15; i++){
-            //Inicializo botón con su texto
-            boton[i] = new JButton(texto_boton[i]);
-            boton[i].setPreferredSize(new Dimension(ancho,alto));
-            
-            boton[i].setFont(new Font("MONOSPACED",PLAIN,16));
-            boton[i].setOpaque(true);
-            boton[i].setFocusPainted(false);
-            boton[i].setBackground(Color.DARK_GRAY);
-            boton[i].setBorder(new LineBorder(Color.DARK_GRAY));
-            boton[i].setForeground(Color.WHITE);
-            //añado botón al panel de botones
-            panelBotones.add(boton[i]);
+
+    private void initBotones() {
+
+        for (int i = 0; i < numBotones; i++) {
+            botones[i] = new JButton(textoBotones[i]); //Inicializo JButton
+            int size = (i == 0) ? 24 : 16; //EL botón de Resultado tendrá un tamaño de fuente menor que todos los demás
+            int ancho = (i == 0) ? 245 : anchoBoton; //EL botón de Resultado será más ancho que todos los demás
+            /*
+	            La línea anterior es el OPERADOR TERNARIO equivalente a la siguiente estructura if-else
+	            if (i == 0){
+	                int ancho = 245;
+	            }
+	            else{
+	                int ancho = anchoBoton;
+	            }
+             */
+            botones[i].setBounds(xBotones[i], yBotones[i], ancho, altoBoton); //Posición y dimensiones
+            botones[i].setFont(new Font("MONOSPACED", PLAIN, size)); //Fuente
+            botones[i].setOpaque(true); //Para poder darle un color de fondo
+            botones[i].setFocusPainted(false); //Para que no salga una recuadro azul cuando tenga el foco
+            botones[i].setBackground(Color.DARK_GRAY); //Color de fondo
+            botones[i].setForeground(Color.WHITE); //Color de fuente
+            botones[i].setBorder(new LineBorder(Color.DARK_GRAY)); //Borde
+            add(botones[i]); //Añado el JButton al JFrame
         }
-    }
-    
-    private void initBotonResultado(){
-        
-        botonResultado = new JButton("RESULTADO");
-        botonResultado.setPreferredSize(new Dimension(230,alto));
-        botonResultado.setFont(new Font("MONOSPACED",PLAIN,16));
-        botonResultado.setOpaque(true);
-        botonResultado.setFocusPainted(false);
-        botonResultado.setBackground(Color.DARK_GRAY);
-        botonResultado.setBorder(new LineBorder(Color.DARK_GRAY));
-        botonResultado.setForeground(Color.WHITE);
-        add(botonResultado);
-        
-    }
-    
-    private void initPantalla(){
-        
-        miFlowLayout = new FlowLayout(FlowLayout.CENTER,10,10);
-        setLayout(miFlowLayout);
-        setTitle("Ejercicio 1");
-        setMinimumSize(new Dimension(255,405));
-        setResizable(false);
-        getContentPane().setBackground(Color.black);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
-        
-    }
-    
-    public static void main( String args[] ) {
-        
-        new main();
-        
+
     }
 
+    private void initPantalla() {
+
+        setLayout(null); //Layout absoluto
+        setTitle("Calculadora"); //Título del JFrame
+        setSize(290, 455); //Dimensiones del JFrame
+        setResizable(false); //No redimensionable
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
+        getContentPane().setBackground(Color.BLACK); //Color de fondo
+        setVisible(true); //Mostrar JFrame
+    }
+
+    private void eventosNumeros() {
+        for (int i = 0; i < 10; i++) {
+            int numBoton = numerosBotones[i];
+            botones[numBoton].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //Si es un nuevo número y no es 0, sustituyo el valor del display
+                    if (nuevoNumero) {
+                        if (!textoBotones[numBoton].equals("0")) {
+                            display.setText(textoBotones[numBoton]);
+                            nuevoNumero = false; //Ya no es un nuevo número
+                        }
+                    } //Si no, lo añado a los dígitos que ya hubiera
+                    else {
+                        display.setText(display.getText() + textoBotones[numBoton]);
+                    }
+                }
+            });
+        }
+        
+        
+
+    }
+
+    private void eventoDecimal() {
+
+    }
+
+    private void eventosOperaciones() {
+
+    }
+
+    private void eventoResultado() {
+
+    }
+
+    private void eventoLimpiar() {
+
+    }
+
+    public static void main(String[] args) {
+        new main();
+    }
 
 }
