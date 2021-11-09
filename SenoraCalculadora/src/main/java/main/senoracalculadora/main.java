@@ -16,6 +16,7 @@ import static java.awt.Font.PLAIN;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class main extends JFrame {
 
@@ -24,7 +25,7 @@ public class main extends JFrame {
     //Cantidad de botones de calculadora
     int numBotones = 17;
     //Array de botones para números y operaciones
-    JButton botones[] = new JButton[numBotones];
+    Boton botones[] = new Boton[numBotones];
     //Array de strings para las etiquetas de los botones
     String textoBotones[] = {"Resultado", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
     //Array de posiciones en X de cada botón
@@ -48,7 +49,14 @@ public class main extends JFrame {
     double resultado = 0;
     //Para almacenar el string de la operación realizada (+, -, *, /)
     String operacion = "";
-
+   JButton miBoton;
+   
+   public class Boton extends JButton{
+       Boton(String s){
+           super(s);
+       }
+   }
+   
     public main() {
 
         initDisplay(); //Display de la calculadora
@@ -78,7 +86,7 @@ public class main extends JFrame {
     private void initBotones() {
 
         for (int i = 0; i < numBotones; i++) {
-            botones[i] = new JButton(textoBotones[i]); //Inicializo JButton
+            botones[i] = new Boton(textoBotones[i]); //Inicializo el boton
             int size = (i == 0) ? 24 : 16; //EL botón de Resultado tendrá un tamaño de fuente menor que todos los demás
             int ancho = (i == 0) ? 245 : anchoBoton; //EL botón de Resultado será más ancho que todos los demás
             /*
@@ -132,12 +140,52 @@ public class main extends JFrame {
                 }
             });
         }
-        
-        
+        MouseListener on[] = new MouseListener[numBotones];
+        for(int i=0;i<numBotones; i++){
+            miBoton = botones[i];
+            botones[i].addMouseListener(on[i] = new MouseListener(){
+                @Override
+                public void mouseEntered(MouseEvent e){
+                    miBoton.setBackground(Color.GREEN);
+                    miBoton.setForeground(Color.DARK_GRAY);
+                }
+                @Override
+                public void mouseExited(MouseEvent e){
+                    miBoton.setBackground(Color.DARK_GRAY);
+                    miBoton.setForeground(Color.WHITE);
+                }
 
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            });
+        }
+  
     }
 
     private void eventoDecimal() {
+        botones[15].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Si todavía no he añadido el punto decimal al número actual
+                if (!puntoDecimal) {
+                    display.setText(display.getText() + textoBotones[15]);
+                    puntoDecimal = true; //Ya no puedo añadir el punto decimal en este número
+                    nuevoNumero = false; //Por si empiezo el número con punto decimal (por ejemplo, .537)
+                }
+            }
+        });
 
     }
 
