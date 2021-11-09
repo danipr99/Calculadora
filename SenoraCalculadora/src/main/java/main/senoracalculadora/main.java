@@ -17,15 +17,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class main extends JFrame {
 
+    JPanel panelP = new JPanel();// LO HE HECHO YO, PERO NO ESTA INTRODUCIDO
     //Display para mostrar los números
     JLabel display;
     //Cantidad de botones de calculadora
     int numBotones = 17;
     //Array de botones para números y operaciones
     Boton botones[] = new Boton[numBotones];
+    Boton botonCientifico = new Boton("W");
     //Array de strings para las etiquetas de los botones
     String textoBotones[] = {"Resultado", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
     //Array de posiciones en X de cada botón
@@ -49,25 +54,70 @@ public class main extends JFrame {
     double resultado = 0;
     //Para almacenar el string de la operación realizada (+, -, *, /)
     String operacion = "";
-   JButton miBoton;
-   
-   public class Boton extends JButton{
-       Boton(String s){
-           super(s);
-       }
-   }
-   
+
+
+    public class Boton extends JButton {
+
+        public MouseListener ms;
+
+        Boton(String s) {
+            super(s);
+            ms = new MouseListener() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    setBackground(Color.GREEN);
+                    setForeground(Color.DARK_GRAY);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    setBackground(Color.DARK_GRAY);
+                    setForeground(Color.WHITE);
+                }
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            };
+        }
+
+        public MouseListener getMouseListener() {
+            return ms;
+        }
+    }
+
+    public class esperaActivaPantalla implements Runnable {
+
+        @Override
+        public void run() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+    }
+
     public main() {
 
         initDisplay(); //Display de la calculadora
         initBotones(); //Botones de la calculadora
         initPantalla(); //Opciones del JFrame
         eventosNumeros(); //Eventos asociados a los botones de números de la calculadora
+        eventosBotones(); //Eventos asociados a todos los botones de la calculadora
         eventoDecimal(); //Eventos asociados al botón decimal "." de la calculadora
         eventosOperaciones(); //Eventos asociados a los botones de operaciones (+,-,*,/) de la calculadora
         eventoResultado();  //Eventos asociados al botón resultado de la calculadora
         eventoLimpiar();  //Eventos asociados al botón de limpiar "C" de la calculadora
-
+        eventosCientifica();
     }
 
     private void initDisplay() {
@@ -121,6 +171,16 @@ public class main extends JFrame {
         setVisible(true); //Mostrar JFrame
     }
 
+    private void eventosBotones() {
+
+        MouseListener on[] = new MouseListener[numBotones];
+        for (int i = 0; i < numBotones; i++) {
+
+            
+            botones[i].addMouseListener(botones[i].getMouseListener());
+        }
+    }
+
     private void eventosNumeros() {
         for (int i = 0; i < 10; i++) {
             int numBoton = numerosBotones[i];
@@ -140,38 +200,6 @@ public class main extends JFrame {
                 }
             });
         }
-        MouseListener on[] = new MouseListener[numBotones];
-        for(int i=0;i<numBotones; i++){
-            miBoton = botones[i];
-            botones[i].addMouseListener(on[i] = new MouseListener(){
-                @Override
-                public void mouseEntered(MouseEvent e){
-                    miBoton.setBackground(Color.GREEN);
-                    miBoton.setForeground(Color.DARK_GRAY);
-                }
-                @Override
-                public void mouseExited(MouseEvent e){
-                    miBoton.setBackground(Color.DARK_GRAY);
-                    miBoton.setForeground(Color.WHITE);
-                }
-
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-            });
-        }
-  
     }
 
     private void eventoDecimal() {
@@ -189,15 +217,108 @@ public class main extends JFrame {
 
     }
 
-    private void eventosOperaciones() {
+    private double resultado() {
 
+        //recojo el valor del display
+        operando1 = Double.parseDouble(display.getText());
+        //Selecciono y realizo operación
+        switch (operacion) {
+
+            case "+":
+                resultado = operando2 + operando1;
+                break;
+            case "-":
+                resultado = operando2 - operando1;
+                break;
+            case "*":
+                resultado = operando2 * operando1;
+                break;
+            case "/":
+                resultado = operando2 / operando1;
+                break;
+
+        }
+        //Formateo y muestro en el display
+        Locale localeActual = Locale.GERMAN;
+        DecimalFormatSymbols simbolos = new DecimalFormatSymbols(localeActual);
+        simbolos.setDecimalSeparator('.');
+        DecimalFormat formatoResultado = new DecimalFormat("#.######", simbolos);
+        display.setText(String.valueOf(formatoResultado.format(resultado)));
+
+        //Limpio variables para poder continuar
+        limpiar();
+
+        //Devuelvo el valor del resultado
+        return resultado;
+
+    }
+
+    private void limpiar() {
+
+        operando1 = operando2 = 0;
+        operacion = "";
+        nuevoNumero = true;
+        puntoDecimal = false;
+    }
+
+    private void eventosOperaciones() {
+        for (int numBoton : operacionesBotones) { //Es la versión optimizada de for (int i = 0; i < operacionesBotones.length; i++){
+            botones[numBoton].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    //Si no tenía ninguna operación pendiente de realizar
+                    if (operacion.equals("")) {
+                        //Asocio la operación del botón a la variable
+                        operacion = textoBotones[numBoton];
+                        //Asigno a operando2 el valor del display (como double)
+                        operando2 = Double.parseDouble(display.getText());
+                        //Reseteo para poder introducir otro número y otro decimal
+                        nuevoNumero = true;
+                        puntoDecimal = false;
+                        //Si tenía alguna pendiente, calculo el resultado de la anterior y luego me guardo la actual
+                    } else {
+                        operando2 = resultado(); //Se almacena en operando2 para poder encadenar operaciones posteriores
+                        operacion = textoBotones[numBoton];
+                    }
+                    //SOUT para comprobar que estoy guardando los valores adecuados
+                    System.out.println(operando2 + " " + operacion + " " + operando1);
+
+                }
+            });
+        }
     }
 
     private void eventoResultado() {
 
+
+    botones[0].addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            //Al pulsar el botón de resultado, directamente lo calculo y reseteo la calculadora,
+            //sin necesidad de almacenar el resultado para futuras operaciones
+            resultado();
+
+
+        }
+    });
+
+
+
     }
 
     private void eventoLimpiar() {
+        botones[13].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Al pulsar el botón de limpiar, se resetean el display y las variables de la calculadora,
+                display.setText("0");
+                limpiar();
+            }
+        });
+
+    }
+
+    private void eventosCientifica() {
 
     }
 
