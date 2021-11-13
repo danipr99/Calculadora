@@ -9,6 +9,7 @@ package main.senoracalculadora;
  *
  * @author DPDAN
  */
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -55,47 +56,6 @@ public class main extends JFrame {
     //Para almacenar el string de la operación realizada (+, -, *, /)
     String operacion = "";
 
-
-    public class Boton extends JButton {
-
-        public MouseListener ms;
-
-        Boton(String s) {
-            super(s);
-            ms = new MouseListener() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    setBackground(Color.GREEN);
-                    setForeground(Color.DARK_GRAY);
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    setBackground(Color.DARK_GRAY);
-                    setForeground(Color.WHITE);
-                }
-
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                }
-            };
-        }
-
-        public MouseListener getMouseListener() {
-            return ms;
-        }
-    }
 
     public class esperaActivaPantalla implements Runnable {
 
