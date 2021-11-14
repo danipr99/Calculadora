@@ -22,26 +22,28 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+
 public class main extends JFrame {
 
     JPanel panelP = new JPanel();// LO HE HECHO YO, PERO NO ESTA INTRODUCIDO
+    Cientifica c = new Cientifica();
     //Display para mostrar los números
     JLabel display;
     //Cantidad de botones de calculadora
-    int numBotones = 17;
+    int numBotones = 18;
     //Array de botones para números y operaciones
     Boton botones[] = new Boton[numBotones];
-    Boton botonCientifico = new Boton("W");
+    Boton botonCientifico;
     //Array de strings para las etiquetas de los botones
-    String textoBotones[] = {"Resultado", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
+    String textoBotones[] = {"=", "CT", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
     //Array de posiciones en X de cada botón
-    int xBotones[] = {15, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210};
+    int xBotones[] = {15, 145, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210};
     //Array de posiciones en Y de cada botón
-    int yBotones[] = {90, 155, 155, 155, 155, 220, 220, 220, 220, 285, 285, 285, 285, 350, 350, 350, 350};
+    int yBotones[] = {90, 90, 155, 155, 155, 155, 220, 220, 220, 220, 285, 285, 285, 285, 350, 350, 350, 350};
     //Array de índices del array de botones que corresponden a números (en el órden en el que se pintarán)
-    int numerosBotones[] = {14, 9, 10, 11, 5, 6, 7, 1, 2, 3};
+    int numerosBotones[] = {15, 10, 11, 12, 6, 7, 8, 2, 3, 4};
     //Array de índices del array de botones que corresponden a operaciones (en el órden en el que se pintarán)
-    int[] operacionesBotones = {16, 12, 8, 4};
+    int[] operacionesBotones = {17, 13, 9, 5};
     //Alto y ancho de cada botón
     int anchoBoton = 50;
     int altoBoton = 50;
@@ -57,14 +59,7 @@ public class main extends JFrame {
     String operacion = "";
 
 
-    public class esperaActivaPantalla implements Runnable {
-
-        @Override
-        public void run() {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }
-
-    }
+ 
 
     public main() {
 
@@ -78,6 +73,11 @@ public class main extends JFrame {
         eventoResultado();  //Eventos asociados al botón resultado de la calculadora
         eventoLimpiar();  //Eventos asociados al botón de limpiar "C" de la calculadora
         eventosCientifica();
+        
+        
+        
+        
+        
     }
 
     private void initDisplay() {
@@ -94,11 +94,11 @@ public class main extends JFrame {
     }
 
     private void initBotones() {
-
+           
         for (int i = 0; i < numBotones; i++) {
             botones[i] = new Boton(textoBotones[i]); //Inicializo el boton
-            int size = (i == 0) ? 24 : 16; //EL botón de Resultado tendrá un tamaño de fuente menor que todos los demás
-            int ancho = (i == 0) ? 245 : anchoBoton; //EL botón de Resultado será más ancho que todos los demás
+            int size = (i == 0) || (i == 1) ? 24 : 16; //EL botón de Resultado tendrá un tamaño de fuente menor que todos los demás
+            int ancho = (i == 0)|| (i == 1) ? 245/2 : anchoBoton; //EL botón de Resultado será más ancho que todos los demás
             /*
 	            La línea anterior es el OPERADOR TERNARIO equivalente a la siguiente estructura if-else
 	            if (i == 0){
@@ -116,8 +116,9 @@ public class main extends JFrame {
             botones[i].setForeground(Color.WHITE); //Color de fuente
             botones[i].setBorder(new LineBorder(Color.DARK_GRAY)); //Borde
             add(botones[i]); //Añado el JButton al JFrame
+            
         }
-
+      
     }
 
     private void initPantalla() {
@@ -125,8 +126,9 @@ public class main extends JFrame {
         setLayout(null); //Layout absoluto
         setTitle("Calculadora"); //Título del JFrame
         setSize(290, 455); //Dimensiones del JFrame
-        setResizable(false); //No redimensionable
+        setResizable(true); //No redimensionable
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
+        getContentPane().add(c);
         getContentPane().setBackground(Color.BLACK); //Color de fondo
         setVisible(true); //Mostrar JFrame
     }
@@ -279,7 +281,12 @@ public class main extends JFrame {
     }
 
     private void eventosCientifica() {
+        botonCientifico.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                getContentPane().add(c);
 
+            }
+        });
     }
 
     public static void main(String[] args) {
