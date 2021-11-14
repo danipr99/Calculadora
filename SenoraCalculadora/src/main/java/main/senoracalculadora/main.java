@@ -33,7 +33,7 @@ public class main extends JFrame {
     int numBotones = 18;
     //Array de botones para números y operaciones
     Boton botones[] = new Boton[numBotones];
-    Boton botonCientifico;
+   
     //Array de strings para las etiquetas de los botones
     String textoBotones[] = {"=", "CT", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
     //Array de posiciones en X de cada botón
@@ -128,17 +128,18 @@ public class main extends JFrame {
         setSize(290, 455); //Dimensiones del JFrame
         setResizable(true); //No redimensionable
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
-        getContentPane().add(c);
         getContentPane().setBackground(Color.BLACK); //Color de fondo
         setVisible(true); //Mostrar JFrame
+        panelP.setSize(290, 455);
+        panelP.setLocation(0, 0);
+        panelP.setBackground(Color.RED);
+        panelP.setVisible(true);
     }
 
     private void eventosBotones() {
 
         MouseListener on[] = new MouseListener[numBotones];
-        for (int i = 0; i < numBotones; i++) {
-
-            
+        for (int i = 0; i < numBotones; i++) {       
             botones[i].addMouseListener(botones[i].getMouseListener());
         }
     }
@@ -281,12 +282,17 @@ public class main extends JFrame {
     }
 
     private void eventosCientifica() {
-        botonCientifico.addActionListener(new ActionListener(){
+      botones[1].addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
-                getContentPane().add(c);
-
+                abrirCientifica();
             }
+
         });
+    }
+
+    private void abrirCientifica() {
+
     }
 
     public static void main(String[] args) {

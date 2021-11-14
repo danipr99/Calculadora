@@ -16,7 +16,7 @@ import javax.swing.JButton;
  */
     public class Boton extends JButton {
 
-        public MouseListener ms;
+        private MouseListener ms;
 
         Boton(String s) {
             super(s);
