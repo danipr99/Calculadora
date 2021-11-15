@@ -21,24 +21,24 @@ import java.util.Locale;
  *
  * @author DPDAN
  */
-public class Cientifica extends JFrame {
+public class Cientifica extends JPanel {
 
     JLabel display;
     //Cantidad de botones de calculadora
-    int numBotones = 18;
+    int numBotones = 20;
     //Array de botones para números y operaciones
     Boton botones[] = new Boton[numBotones];
 
     //Array de strings para las etiquetas de los botones
-    String textoBotones[] = {"=", "NM", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
+    String textoBotones[] = {"=", "NM", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+", "^2", "√"};
     //Array de posiciones en X de cada botón
-    int xBotones[] = {15, 145, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210};
+    int xBotones[] = {15, 145, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80, 145, 210, 15, 80};
     //Array de posiciones en Y de cada botón
-    int yBotones[] = {90, 90, 155, 155, 155, 155, 220, 220, 220, 220, 285, 285, 285, 285, 350, 350, 350, 350};
+    int yBotones[] = {90, 90, 155, 155, 155, 155, 220, 220, 220, 220, 285, 285, 285, 285, 350, 350, 350, 350, 415, 415};
     //Array de índices del array de botones que corresponden a números (en el órden en el que se pintarán)
     int numerosBotones[] = {15, 10, 11, 12, 6, 7, 8, 2, 3, 4};
     //Array de índices del array de botones que corresponden a operaciones (en el órden en el que se pintarán)
-    int[] operacionesBotones = {17, 13, 9, 5};
+    int[] operacionesBotones = {17, 13, 9, 5, 18, 19};
     //Alto y ancho de cada botón
     int anchoBoton = 50;
     int altoBoton = 50;
@@ -55,15 +55,14 @@ public class Cientifica extends JFrame {
 
     public Cientifica() {
 
-        setResizable(true);
+        
         setLayout(null); //Layout absoluto
         setSize(290, 455); //Dimensiones del JFrame
         setBackground(Color.BLACK); //Color de fondo
         setVisible(true); //Mostrar JFrame
-        setTitle("Calculadora 100tífica");
         initDisplay(); //Display de la calculadora
         initBotones(); //Botones de la calculadora
-         eventosNumeros(); //Eventos asociados a los botones de números de la calculadora
+        eventosNumeros(); //Eventos asociados a los botones de números de la calculadora
         eventosBotones(); //Eventos asociados a todos los botones de la calculadora
         eventoDecimal(); //Eventos asociados al botón decimal "." de la calculadora
         eventosOperaciones(); //Eventos asociados a los botones de operaciones (+,-,*,/) de la calculadora
@@ -176,6 +175,13 @@ public class Cientifica extends JFrame {
             case "/":
                 resultado = operando2 / operando1;
                 break;
+            case "^2":
+                resultado = operando1 * operando1;
+                break;
+            case "√":
+                resultado = Math.sqrt(operando1);
+                break;
+                        
 
         }
         //Formateo y muestro en el display
@@ -254,9 +260,7 @@ public class Cientifica extends JFrame {
 
     }
 
-    public static void main(String[] args) {
-        new Cientifica();
-    }
+
 
     private void eventosNormal() {
         botones[1].addActionListener(new ActionListener() {
@@ -269,6 +273,6 @@ public class Cientifica extends JFrame {
     }
 
     private void cerrarCientifica() {
-       
+        setVisible(false);
     }
 }

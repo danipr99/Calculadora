@@ -9,7 +9,6 @@ package main.senoracalculadora;
  *
  * @author DPDAN
  */
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
@@ -22,7 +21,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-
 public class main extends JFrame {
 
     JPanel panelP = new JPanel();// LO HE HECHO YO, PERO NO ESTA INTRODUCIDO
@@ -33,7 +31,7 @@ public class main extends JFrame {
     int numBotones = 18;
     //Array de botones para números y operaciones
     Boton botones[] = new Boton[numBotones];
-   
+
     //Array de strings para las etiquetas de los botones
     String textoBotones[] = {"=", "CT", "7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", ".", "+"};
     //Array de posiciones en X de cada botón
@@ -58,14 +56,10 @@ public class main extends JFrame {
     //Para almacenar el string de la operación realizada (+, -, *, /)
     String operacion = "";
 
-
- 
-
     public main() {
-
+        initPantalla(); //Opciones del JFrame
         initDisplay(); //Display de la calculadora
         initBotones(); //Botones de la calculadora
-        initPantalla(); //Opciones del JFrame
         eventosNumeros(); //Eventos asociados a los botones de números de la calculadora
         eventosBotones(); //Eventos asociados a todos los botones de la calculadora
         eventoDecimal(); //Eventos asociados al botón decimal "." de la calculadora
@@ -73,32 +67,30 @@ public class main extends JFrame {
         eventoResultado();  //Eventos asociados al botón resultado de la calculadora
         eventoLimpiar();  //Eventos asociados al botón de limpiar "C" de la calculadora
         eventosCientifica();
-        
-        
-        
-        
-        
+
     }
 
     private void initDisplay() {
 
         display = new JLabel("0"); //Inicio JLabel
-        display.setBounds(15, 15, 245, 60); //Posición y dimensiones
+        panelP.add(display);
+        display.setLocation(new Point(15, 15));
+        display.setBounds(10, 10, 245, 50); //Posición y dimensiones                
         display.setOpaque(true); //Para poder darle un color de fondo
         display.setBackground(Color.BLACK); //Color de fondo
         display.setForeground(Color.GREEN); //Color de fuente
         display.setBorder(new LineBorder(Color.DARK_GRAY)); //Borde
         display.setFont(new Font("MONOSPACED", PLAIN, 24)); //Fuente
         display.setHorizontalAlignment(SwingConstants.RIGHT); //Alineamiento horizontal derecha
-        add(display); //Añado el JLabel al JFrame
+
     }
 
     private void initBotones() {
-           
+
         for (int i = 0; i < numBotones; i++) {
             botones[i] = new Boton(textoBotones[i]); //Inicializo el boton
             int size = (i == 0) || (i == 1) ? 24 : 16; //EL botón de Resultado tendrá un tamaño de fuente menor que todos los demás
-            int ancho = (i == 0)|| (i == 1) ? 245/2 : anchoBoton; //EL botón de Resultado será más ancho que todos los demás
+            int ancho = (i == 0) || (i == 1) ? 245 / 2 : anchoBoton; //EL botón de Resultado será más ancho que todos los demás
             /*
 	            La línea anterior es el OPERADOR TERNARIO equivalente a la siguiente estructura if-else
 	            if (i == 0){
@@ -108,17 +100,17 @@ public class main extends JFrame {
 	                int ancho = anchoBoton;
 	            }
              */
-            botones[i].setBounds(xBotones[i], yBotones[i], ancho, altoBoton); //Posición y dimensiones
+            botones[i].setBounds(xBotones[i], yBotones[i] + 10, ancho, altoBoton); //Posición y dimensiones
             botones[i].setFont(new Font("MONOSPACED", PLAIN, size)); //Fuente
             botones[i].setOpaque(true); //Para poder darle un color de fondo
             botones[i].setFocusPainted(false); //Para que no salga una recuadro azul cuando tenga el foco
             botones[i].setBackground(Color.DARK_GRAY); //Color de fondo
             botones[i].setForeground(Color.WHITE); //Color de fuente
             botones[i].setBorder(new LineBorder(Color.DARK_GRAY)); //Borde
-            add(botones[i]); //Añado el JButton al JFrame
-            
+            panelP.add(botones[i]); //Añado el JButton al JFrame
+
         }
-      
+
     }
 
     private void initPantalla() {
@@ -130,17 +122,19 @@ public class main extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Cerrar proceso al cerrar ventana
         getContentPane().setBackground(Color.BLACK); //Color de fondo
         setVisible(true); //Mostrar JFrame
+        add(panelP);
         panelP.setSize(290, 455);
         panelP.setLocation(0, 0);
-        panelP.setBackground(Color.RED);
+        panelP.setBackground(Color.BLACK);
         panelP.setVisible(true);
     }
 
     private void eventosBotones() {
 
         MouseListener on[] = new MouseListener[numBotones];
-        for (int i = 0; i < numBotones; i++) {       
+        for (int i = 0; i < numBotones; i++) {
             botones[i].addMouseListener(botones[i].getMouseListener());
+
         }
     }
 
@@ -253,19 +247,15 @@ public class main extends JFrame {
 
     private void eventoResultado() {
 
+        botones[0].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //Al pulsar el botón de resultado, directamente lo calculo y reseteo la calculadora,
+                //sin necesidad de almacenar el resultado para futuras operaciones
+                resultado();
 
-    botones[0].addActionListener(new ActionListener() {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            //Al pulsar el botón de resultado, directamente lo calculo y reseteo la calculadora,
-            //sin necesidad de almacenar el resultado para futuras operaciones
-            resultado();
-
-
-        }
-    });
-
-
+            }
+        });
 
     }
 
@@ -282,16 +272,41 @@ public class main extends JFrame {
     }
 
     private void eventosCientifica() {
-      botones[1].addActionListener(new ActionListener() {
+        botones[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                abrirCientifica();
+                if (botones[1].getText().equalsIgnoreCase("CT")) {
+                    abrirCientifica();
+                } else {
+                    initDisplay(); //Display de la calculadora
+                    initBotones(); //Botones de la calculadora
+                    eventosNumeros(); //Eventos asociados a los botones de números de la calculadora
+                    eventosBotones(); //Eventos asociados a todos los botones de la calculadora
+                    eventoDecimal(); //Eventos asociados al botón decimal "." de la calculadora
+                    eventosOperaciones(); //Eventos asociados a los botones de operaciones (+,-,*,/) de la calculadora
+                    eventoResultado();  //Eventos asociados al botón resultado de la calculadora
+                    eventoLimpiar();  //Eventos asociados al botón de limpiar "C" de la calculadora
+                    eventosCientifica();
+                }
             }
-
         });
     }
 
     private void abrirCientifica() {
+        //initComponentsCientifica();
+        panelP.removeAll();
+        this.setBounds(new Rectangle(0,0, 290, 515));
+        this.setTitle("Cientifica");
+        
+        add(c);
+        revalidate();
+        repaint();
+        validate();
+        c.revalidate();
+        c.repaint();
+        c.validate();        
+        c.setSize(290, 515);
+        c.setLocation(0, 0);
 
     }
 

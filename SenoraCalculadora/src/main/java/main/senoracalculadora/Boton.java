@@ -20,6 +20,7 @@ import javax.swing.JButton;
 
         Boton(String s) {
             super(s);
+            setVisible(true);
             ms = new MouseListener() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -49,8 +50,10 @@ import javax.swing.JButton;
                 }
             };
         }
+        
 
         public MouseListener getMouseListener() {
             return ms;
+            
         }
     }
